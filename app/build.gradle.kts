@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.self_management_app"
+    namespace = "com.ofthemasses.self_management_app"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.self_management_app"
+        applicationId = "com.ofthemasses.self_management_app"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

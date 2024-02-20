@@ -1,4 +1,4 @@
-package com.example.self_management_app
+package com.ofthemasses.self_management_app
 
 import org.junit.Test
 
