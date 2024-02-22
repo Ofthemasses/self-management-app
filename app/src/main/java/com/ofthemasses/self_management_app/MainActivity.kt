@@ -57,8 +57,8 @@ fun Middle(activity: Activity? = null) {
 
     if (DiarySerializer.checkPermission(activity)){
         val entry = DiarySerializer.deserializeToday();
-        val todo = entry.toDos.first().first()!!;
-        cardText = todo.name;
+        val todo =entry.getTodoByIndex(0, 0);
+        cardText = todo!!.name;
     }
 
     Column(
