@@ -2,9 +2,12 @@ package com.ofthemasses.self_management_app
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,10 +48,17 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun Middle(activity: Activity? = null) {
     var cardText by remember {
         mutableStateOf("Hello World!")
+    }
+
+    if (DiarySerializer.checkPermission(activity)){
+        val entry = DiarySerializer.deserializeToday();
+        val todo = entry.toDos.first().first()!!;
+        cardText = todo.name;
     }
 
     Column(
@@ -60,9 +70,6 @@ fun Middle(activity: Activity? = null) {
             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
             modifier = Modifier
                 .size(width = 240.dp, height = 100.dp)
-                .clickable {
-                    cardText = if(DiarySerializer.checkPermission(activity)) "True" else "False";
-                }
         )
         {
             Text(
@@ -74,6 +81,7 @@ fun Middle(activity: Activity? = null) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
