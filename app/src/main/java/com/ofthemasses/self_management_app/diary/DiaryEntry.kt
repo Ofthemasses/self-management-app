@@ -12,8 +12,8 @@ data class DiaryEntry(val date: String,
         if (index < 0 || index >= flattenedTodos.size) return null;
 
         if (statusFilter == null){
-            return flattenedTodos.firstOrNull { it != null }
+            return flattenedTodos.filterNotNull().getOrNull(index);
         }
-        return flattenedTodos.filterNotNull().firstOrNull { it.status == statusFilter }
+        return flattenedTodos.filterNotNull().filter { it.status == statusFilter }.getOrNull(index);
     }
 }

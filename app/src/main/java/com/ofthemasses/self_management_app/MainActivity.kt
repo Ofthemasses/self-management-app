@@ -51,14 +51,21 @@ class MainActivity : ComponentActivity() {
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun Middle(activity: Activity? = null) {
-    var cardText by remember {
-        mutableStateOf("Hello World!")
+    var mainCardText by remember {
+        mutableStateOf("No TODO")
+    }
+    var upcomingCardText by remember {
+        mutableStateOf("No TODO")
     }
 
     if (DiarySerializer.checkPermission(activity)){
         val entry = DiarySerializer.deserializeToday();
-        val todo =entry.getTodoByIndex(0, 0);
-        cardText = todo!!.name;
+
+        val todo = entry.getTodoByIndex(0, 0);
+        if (todo != null) mainCardText = todo.name;
+
+        val upcomingTodo = entry.getTodoByIndex(1, 0);
+        if (upcomingTodo != null) upcomingCardText = upcomingTodo.name;
     }
 
     Column(
@@ -73,7 +80,19 @@ fun Middle(activity: Activity? = null) {
         )
         {
             Text(
-                text = cardText,
+                text = mainCardText,
+                modifier = Modifier.padding(16.dp),
+                textAlign = TextAlign.Center
+            )
+        }
+        ElevatedCard(
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+            modifier = Modifier
+                .size(width = 240.dp, height = 100.dp)
+        )
+        {
+            Text(
+                text = upcomingCardText,
                 modifier = Modifier.padding(16.dp),
                 textAlign = TextAlign.Center
             )
@@ -81,7 +100,7 @@ fun Middle(activity: Activity? = null) {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.R)
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
