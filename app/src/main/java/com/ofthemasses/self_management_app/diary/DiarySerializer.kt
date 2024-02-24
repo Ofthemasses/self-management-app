@@ -43,6 +43,46 @@ class DiarySerializer : Activity(){
             return deserializeMarkdown(file);
         }
 
+        fun serializeDiaryEntry(entry: DiaryEntry): Boolean {
+            val entryBuilder = StringBuilder();
+
+            entryBuilder
+                .appendLine(String.format("# %s", entry.date))
+                .appendLine()
+                .appendLine(String.format("### %s", entry.description))
+                .appendLine()
+                .appendLine("## To-Do List")
+
+
+            entry.toDos.forEachIndexed { index, section ->
+                if (index != 0) entryBuilder
+                    .appendLine("---")
+                section.forEach { todo ->
+                        val formattedTodo = when (todo?.status) {
+                            -1 -> "- ~~${todo.name}~~"
+                            0 -> "- [ ] ${todo.name}"
+                            1 -> "- [X] ${todo.name}"
+                            else -> ""
+                        }
+                        entryBuilder.appendLine(formattedTodo)
+                    }
+            }
+
+            entry.sections.forEach { (title, description) ->
+                entryBuilder
+                    .appendLine(title)
+                    .append(description)
+            }
+
+            try {
+                File(String.format("%s%s.md", DIARY_FOLDER_PATH, entry.date))
+                    .writeText(entryBuilder.toString())
+                return true;
+            } catch (e: Exception){
+                return false;
+            }
+        }
+
         @RequiresApi(Build.VERSION_CODES.R)
         fun checkPermission(activity: Activity?) : Boolean {
             if (activity == null){
@@ -78,23 +118,23 @@ class DiarySerializer : Activity(){
             var description = "";
             val toDos = ArrayList<ArrayList<ToDo?>>();
             toDos.add(ArrayList<ToDo?>())
-            val sections = HashMap<String, String>();
+            val sections = ArrayList<Pair<String,String>>()
 
             var handlingTodos = false;
             var handlingSections = false;
             var index = 0;
             var todoSection = 0;
-            var curSection = "";
+            var sectionIndex = -1;
             try {
                 file.forEachLine { line ->
                     if (handlingTodos) {
-                        todoSection = handleTodo(line, todoSection, toDos)
                         handlingTodos = !line.startsWith("##")
                         handlingSections = !handlingTodos;
+                        if (!handlingSections) todoSection = handleTodo(line, todoSection, toDos)
                     }
 
                     if (handlingSections) {
-                        curSection = handleSection(line, curSection, sections);
+                        sectionIndex = handleSection(line, sectionIndex, sections);
                     }
 
                     if (index == 2) {
@@ -156,13 +196,15 @@ class DiarySerializer : Activity(){
             return section;
         }
 
-        private fun handleSection(line: String, curSection: String, sections: HashMap<String, String>): String {
+        private fun handleSection(line: String, sectionIndex: Int, sections: ArrayList<Pair<String, String>>): Int {
             if (line.startsWith("##")){
-                return line.replaceFirst("^#+".toRegex(), "");
+                sections.add(Pair(line, ""))
+                return sectionIndex + 1;
             }
 
-            sections[curSection] = sections[curSection].orEmpty() + line;
-            return curSection;
+            val section = sections[sectionIndex]
+            sections[sectionIndex] = section.copy(second = section.second + line + "\n");
+            return sectionIndex;
         }
 
 

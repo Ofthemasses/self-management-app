@@ -68,15 +68,17 @@ fun Middle(activity: Activity? = null) {
         mutableStateOf("No TODO")
     }
 
-    if (DiarySerializer.checkPermission(activity)){
-        val entry = DiarySerializer.deserializeToday();
-
-        val todo = entry.getTodoByIndex(0, 0);
-        if (todo != null) mainCardText = todo.name;
-
-        val upcomingTodo = entry.getTodoByIndex(1, 0);
-        if (upcomingTodo != null) upcomingCardText = upcomingTodo.name;
+    if (!DiarySerializer.checkPermission(activity)){
+        DiarySerializer.checkPermission(activity)
     }
+
+    val entry = DiarySerializer.deserializeToday();
+
+    var todo = entry.getTodoByIndex(0, 0);
+    if (todo != null) mainCardText = todo.name;
+
+    var upcomingTodo = entry.getTodoByIndex(1, 0);
+    if (upcomingTodo != null) upcomingCardText = upcomingTodo.name;
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -94,8 +96,20 @@ fun Middle(activity: Activity? = null) {
         )
         Box(
             modifier = Modifier
-                .size(width = 300.dp, height = 500.dp),
-            contentAlignment = Alignment.Center
+                .size(width = 300.dp, height = 500.dp)
+                .clickable {
+                    if (todo == null) {
+                        return@clickable
+                    }
+
+                    todo!!.status = 1;
+                    todo = upcomingTodo;
+                    mainCardText = upcomingCardText;
+                    upcomingTodo = entry.getTodoByIndex(1, 0);
+                    upcomingCardText = upcomingTodo?.name ?: "No TODO"
+                    DiarySerializer.serializeDiaryEntry(entry)
+                },
+            contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = mainCardText,

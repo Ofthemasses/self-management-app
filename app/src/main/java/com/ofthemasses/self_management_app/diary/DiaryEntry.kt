@@ -5,7 +5,7 @@ import java.util.Collections
 data class DiaryEntry(val date: String,
                       val description: String,
                       val toDos: ArrayList<ArrayList<ToDo?>>,
-                      val sections: HashMap<String, String>){
+                      val sections: ArrayList<Pair<String, String>>){
     fun getTodoByIndex(index: Int, statusFilter: Int? = null): ToDo? {
         val flattenedTodos = toDos.flatten();
 
