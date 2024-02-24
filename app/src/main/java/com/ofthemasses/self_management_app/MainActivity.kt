@@ -40,111 +40,40 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.ofthemasses.self_management_app.diary.DiarySerializer
+import com.ofthemasses.self_management_app.fragments.FullListFragment
+import com.ofthemasses.self_management_app.fragments.NextToDoFragment
 import com.ofthemasses.self_management_app.ui.theme.SelfmanagementappTheme
 
-class MainActivity : ComponentActivity() {
-    @RequiresApi(Build.VERSION_CODES.R)
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            SelfmanagementappTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Middle(this);
-                }
-            }
-        }
+        setContentView(R.layout.activity_main)
+
+        val viewPager: ViewPager2 = findViewById(R.id.viewPager)
+        val adapter = ViewPagerAdapter(this)
+        adapter.addFragment(NextToDoFragment())
+        adapter.addFragment(FullListFragment())
+        viewPager.adapter = adapter
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.R)
-@Composable
-fun Middle(activity: Activity? = null) {
-    var mainCardText by remember {
-        mutableStateOf("No TODO")
-    }
-    var upcomingCardText by remember {
-        mutableStateOf("No TODO")
+class ViewPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
+    private val fragments: MutableList<Fragment> = mutableListOf()
+
+    fun addFragment(fragment: Fragment) {
+        fragments.add(fragment)
     }
 
-    if (!DiarySerializer.checkPermission(activity)) {
-        // TODO Make it so this waits for permission to be activated
-        DiarySerializer.checkPermission(activity)
+    override fun getItemCount(): Int {
+        return fragments.size
     }
 
-    // TODO Update these variables while the app is running to avoid having to re open app
-    val entry = DiarySerializer.deserializeToday();
-
-    var todo = entry.getTodoByIndex(0, 0);
-    if (todo != null) mainCardText = todo.name;
-
-    var upcomingTodo = entry.getTodoByIndex(1, 0);
-    if (upcomingTodo != null) upcomingCardText = upcomingTodo.name;
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Spacer(
-            modifier = Modifier
-                .height(100.dp)
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primary)
-        )
-        Divider(
-            modifier = Modifier
-                .height(2.dp)
-        )
-        Box(
-            modifier = Modifier
-                .size(width = 300.dp, height = 500.dp)
-                .clickable {
-                    if (todo == null) {
-                        return@clickable
-                    }
-
-                    todo!!.status = 1;
-                    todo = upcomingTodo;
-                    mainCardText = upcomingCardText;
-                    upcomingTodo = entry.getTodoByIndex(1, 0);
-                    upcomingCardText = upcomingTodo?.name ?: "No TODO"
-                    DiarySerializer.serializeDiaryEntry(entry)
-                },
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = mainCardText,
-                style = MaterialTheme.typography.headlineLarge,
-                textAlign = TextAlign.Center
-            )
-        }
-        Divider(
-            modifier = Modifier
-                .height(2.dp)
-        )
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        )
-        {
-            Text(
-                text = upcomingCardText,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.R)
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SelfmanagementappTheme {
-        Middle();
+    override fun createFragment(position: Int): Fragment {
+        return fragments[position]
     }
 }
