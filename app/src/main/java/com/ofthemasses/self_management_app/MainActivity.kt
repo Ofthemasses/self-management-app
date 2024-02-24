@@ -8,14 +8,22 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +44,7 @@ import com.ofthemasses.self_management_app.diary.DiarySerializer
 import com.ofthemasses.self_management_app.ui.theme.SelfmanagementappTheme
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -70,30 +80,41 @@ fun Middle(activity: Activity? = null) {
 
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        ElevatedCard(
-            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        Spacer(
             modifier = Modifier
-                .size(width = 240.dp, height = 100.dp)
+                .height(100.dp)
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primary)
         )
-        {
+        Divider(
+                modifier = Modifier
+                    .height(2.dp)
+        )
+        Box(
+            modifier = Modifier
+                .size(width = 300.dp, height = 500.dp),
+            contentAlignment = Alignment.Center
+        ) {
             Text(
                 text = mainCardText,
-                modifier = Modifier.padding(16.dp),
+                style = MaterialTheme.typography.headlineLarge,
                 textAlign = TextAlign.Center
             )
         }
-        ElevatedCard(
-            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        Divider(
             modifier = Modifier
-                .size(width = 240.dp, height = 100.dp)
+                .height(2.dp)
+        )
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         )
         {
             Text(
                 text = upcomingCardText,
-                modifier = Modifier.padding(16.dp),
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
             )
         }
