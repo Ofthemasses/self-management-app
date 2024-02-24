@@ -24,9 +24,10 @@ val ColorScheme = lightColorScheme(
     tertiary = MorningTertiary,
     outlineVariant = MorningOutline
 )
+
 @Composable
 fun SelfmanagementappTheme(
-        content: @Composable () -> Unit
+    content: @Composable () -> Unit
 ) {
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -37,8 +38,8 @@ fun SelfmanagementappTheme(
     }
 
     MaterialTheme(
-            colorScheme = ColorScheme,
-            typography = Typography,
-            content = content
+        colorScheme = ColorScheme,
+        typography = Typography,
+        content = content
     )
 }

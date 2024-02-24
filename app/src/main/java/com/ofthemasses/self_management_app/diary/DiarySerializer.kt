@@ -20,13 +20,13 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class DiarySerializer : Activity(){
+class DiarySerializer : Activity() {
 
     companion object {
-
         private val STORAGE_PERM_CODE = 100;
         private val DIARY_FOLDER_PATH =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString() +
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+                .toString() +
                     "/Vimwiki/diary/";
 
         private var instance: DiarySerializer? = null;
@@ -58,14 +58,14 @@ class DiarySerializer : Activity(){
                 if (index != 0) entryBuilder
                     .appendLine("---")
                 section.forEach { todo ->
-                        val formattedTodo = when (todo?.status) {
-                            -1 -> "- ~~${todo.name}~~"
-                            0 -> "- [ ] ${todo.name}"
-                            1 -> "- [X] ${todo.name}"
-                            else -> ""
-                        }
-                        entryBuilder.appendLine(formattedTodo)
+                    val formattedTodo = when (todo?.status) {
+                        -1 -> "- ~~${todo.name}~~"
+                        0 -> "- [ ] ${todo.name}"
+                        1 -> "- [X] ${todo.name}"
+                        else -> ""
                     }
+                    entryBuilder.appendLine(formattedTodo)
+                }
             }
 
             entry.sections.forEach { (title, description) ->
@@ -78,14 +78,14 @@ class DiarySerializer : Activity(){
                 File(String.format("%s%s.md", DIARY_FOLDER_PATH, entry.date))
                     .writeText(entryBuilder.toString())
                 return true;
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 return false;
             }
         }
 
         @RequiresApi(Build.VERSION_CODES.R)
-        fun checkPermission(activity: Activity?) : Boolean {
-            if (activity == null){
+        fun checkPermission(activity: Activity?): Boolean {
+            if (activity == null) {
                 return false;
             }
 
@@ -104,21 +104,21 @@ class DiarySerializer : Activity(){
             return true;
         }
 
-        private fun applicationContext() : Context {
+        private fun applicationContext(): Context {
             return instance!!.applicationContext;
         }
 
         private fun deserializeMarkdown(file: File): DiaryEntry {
             val date = file.nameWithoutExtension;
 
-            if (DiaryEntries.containsKey(date)){
+            if (DiaryEntries.containsKey(date)) {
                 return DiaryEntries[date]!!;
             }
 
             var description = "";
             val toDos = ArrayList<ArrayList<ToDo?>>();
             toDos.add(ArrayList<ToDo?>())
-            val sections = ArrayList<Pair<String,String>>()
+            val sections = ArrayList<Pair<String, String>>()
 
             var handlingTodos = false;
             var handlingSections = false;
@@ -146,8 +146,8 @@ class DiarySerializer : Activity(){
                     }
                     index++;
                 }
-            } catch (e: Exception){
-                Log.e(e.message!!,e.stackTraceToString())
+            } catch (e: Exception) {
+                Log.e(e.message!!, e.stackTraceToString())
             }
 
             val entry = DiaryEntry(
@@ -162,13 +162,17 @@ class DiarySerializer : Activity(){
             return entry;
         }
 
-        private fun handleTodo(line: String, section: Int, todos: ArrayList<ArrayList<ToDo?>>): Int {
-            if (line.startsWith("---")){
+        private fun handleTodo(
+            line: String,
+            section: Int,
+            todos: ArrayList<ArrayList<ToDo?>>
+        ): Int {
+            if (line.startsWith("---")) {
                 todos.add(ArrayList<ToDo?>())
                 return section + 1;
             }
 
-            if (!line.startsWith('-')){
+            if (!line.startsWith('-')) {
                 todos[section].add(null);
                 return section;
             }
@@ -179,14 +183,16 @@ class DiarySerializer : Activity(){
                 "~~" -> {
                     todos[section].add(
                         ToDo(-1, todoString.drop(2).substringBefore("~~"))
-                        );
+                    );
                 }
+
                 "[ " -> {
                     todos[section].add(
                         ToDo(0, todoString.drop(4))
                     );
                 }
-                "[X","[x" -> {
+
+                "[X", "[x" -> {
                     todos[section].add(
                         ToDo(1, todoString.drop(4))
                     );
@@ -196,8 +202,12 @@ class DiarySerializer : Activity(){
             return section;
         }
 
-        private fun handleSection(line: String, sectionIndex: Int, sections: ArrayList<Pair<String, String>>): Int {
-            if (line.startsWith("##")){
+        private fun handleSection(
+            line: String,
+            sectionIndex: Int,
+            sections: ArrayList<Pair<String, String>>
+        ): Int {
+            if (line.startsWith("##")) {
                 sections.add(Pair(line, ""))
                 return sectionIndex + 1;
             }
@@ -206,8 +216,5 @@ class DiarySerializer : Activity(){
             sections[sectionIndex] = section.copy(second = section.second + line + "\n");
             return sectionIndex;
         }
-
-
-
     }
 }

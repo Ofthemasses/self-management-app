@@ -50,7 +50,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             SelfmanagementappTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
                     Middle(this);
                 }
             }
@@ -68,7 +71,7 @@ fun Middle(activity: Activity? = null) {
         mutableStateOf("No TODO")
     }
 
-    if (!DiarySerializer.checkPermission(activity)){
+    if (!DiarySerializer.checkPermission(activity)) {
         DiarySerializer.checkPermission(activity)
     }
 
@@ -91,8 +94,8 @@ fun Middle(activity: Activity? = null) {
                 .background(MaterialTheme.colorScheme.primary)
         )
         Divider(
-                modifier = Modifier
-                    .height(2.dp)
+            modifier = Modifier
+                .height(2.dp)
         )
         Box(
             modifier = Modifier
