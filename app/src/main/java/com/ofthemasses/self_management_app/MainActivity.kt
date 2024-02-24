@@ -72,9 +72,11 @@ fun Middle(activity: Activity? = null) {
     }
 
     if (!DiarySerializer.checkPermission(activity)) {
+        // TODO Make it so this waits for permission to be activated
         DiarySerializer.checkPermission(activity)
     }
 
+    // TODO Update these variables while the app is running to avoid having to re open app
     val entry = DiarySerializer.deserializeToday();
 
     var todo = entry.getTodoByIndex(0, 0);
