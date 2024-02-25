@@ -10,18 +10,27 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.sharp.Close
+import androidx.compose.material.icons.sharp.Done
+import androidx.compose.material.icons.sharp.FiberManualRecord
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContentProviderCompat.requireContext
@@ -86,15 +95,43 @@ fun FullListView(activity: Activity? = null) {
 
 @Composable
 fun ToDoEntry(todo: ToDo) {
-
   Box(modifier = Modifier
       .fillMaxWidth()
+      .background(if (todo.status == -1) MaterialTheme.colorScheme.outline else Color.White)
       .padding(10.dp)
   ) {
-      Text(
-          text = todo.name,
-          style = MaterialTheme.typography.bodyLarge
-      )
+      Row(verticalAlignment = Alignment.CenterVertically) {
+          ToDoIcon(todo)
+          Text(
+              modifier = Modifier.padding(start = 10.dp),
+              text = todo.name,
+              style = MaterialTheme.typography.bodyLarge
+          )
+      }
   }
   Divider()
+}
+
+@Composable
+fun ToDoIcon(todo: ToDo) {
+    when(todo.status){
+        0 -> Icon(
+            modifier = Modifier.padding(start = 4.dp),
+            imageVector = Icons.Sharp.FiberManualRecord,
+            tint = MaterialTheme.colorScheme.secondary,
+            contentDescription = null
+        )
+        1 -> Icon (
+            modifier = Modifier.padding(start = 4.dp),
+            imageVector = Icons.Sharp.Done,
+            tint = MaterialTheme.colorScheme.tertiary,
+            contentDescription = null
+        )
+        else -> Icon (
+            modifier = Modifier.padding(start = 4.dp),
+            imageVector = Icons.Sharp.Close,
+            tint = Color.White,
+            contentDescription = null
+        )
+    }
 }
