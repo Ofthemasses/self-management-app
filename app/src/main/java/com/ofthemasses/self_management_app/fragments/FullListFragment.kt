@@ -7,32 +7,94 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
+import com.ofthemasses.self_management_app.diary.DiarySerializer
+import com.ofthemasses.self_management_app.diary.ToDo
 import com.ofthemasses.self_management_app.ui.theme.SelfmanagementappTheme
 
 class FullListFragment : Fragment() {
-    @RequiresApi(Build.VERSION_CODES.R)
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return ComposeView(requireContext()).apply {
-            setContent {
-                SelfmanagementappTheme {
-                    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                        FullListView(activity = requireActivity())
-                    }
-                }
-            }
+  @RequiresApi(Build.VERSION_CODES.R)
+  override fun onCreateView(
+      inflater: LayoutInflater,
+      container: ViewGroup?,
+      savedInstanceState: Bundle?
+  ): View {
+    return ComposeView(requireContext()).apply {
+      setContent {
+        SelfmanagementappTheme {
+          Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            FullListView(activity = requireActivity())
+          }
         }
+      }
     }
+  }
 }
 
-fun FullListView(activity: Activity? = null){}
+@RequiresApi(Build.VERSION_CODES.R)
+@Composable
+fun FullListView(activity: Activity? = null) {
+  if (!DiarySerializer.checkPermission(activity)) {
+    // TODO Make it so this waits for permission to be activated
+    DiarySerializer.checkPermission(activity)
+  }
+
+  val entry = DiarySerializer.deserializeToday()
+  val todos: ArrayList<ArrayList<ToDo?>> = entry.toDos
+  Column() {
+    Spacer(
+        modifier = Modifier
+            .height(100.dp)
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.primary)
+    )
+    LazyColumn {
+      items(todos.size) { index ->
+        todos[index].forEachIndexed { index, todo ->
+          todo?.let { notNullTodo -> ToDoEntry(notNullTodo) }
+        }
+
+        if (index < todos.size - 1) {
+          Spacer(
+              modifier = Modifier
+                  .height(20.dp)
+          )
+          Divider()
+        }
+      }
+    }
+  }
+}
+
+@Composable
+fun ToDoEntry(todo: ToDo) {
+
+  Box(modifier = Modifier
+      .fillMaxWidth()
+      .padding(10.dp)
+  ) {
+      Text(
+          text = todo.name,
+          style = MaterialTheme.typography.bodyLarge
+      )
+  }
+  Divider()
+}
