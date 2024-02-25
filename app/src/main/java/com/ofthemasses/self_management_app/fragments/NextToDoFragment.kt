@@ -44,9 +44,9 @@ class NextToDoFragment : Fragment() {
     return ComposeView(requireContext()).apply {
       setContent {
         SelfmanagementappTheme {
-            Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                NextToDoView(activity = requireActivity())
-            }
+          Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            NextToDoView(activity = requireActivity())
+          }
         }
       }
     }
